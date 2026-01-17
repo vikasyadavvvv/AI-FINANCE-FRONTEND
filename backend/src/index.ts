@@ -6,11 +6,12 @@ import passport from "passport";
 import { Env } from "./config/env.config";
 import { HTTPSTATUS } from "./config/http.config";
 import { errorHandler } from "./middlewares/errorHandler.middleware";
+import { asyncHandler } from "./middlewares/asyncHandler.middleware";
+import { BadRequestException } from "./utils/app-error";
+import connctDatabase from "./config/database.config";
+import authRoutes from "./routes/auth.route";
 // import { errorHandler } from "./middlewares/errorHandler.middleware";
-// import { BadRequestException } from "./utils/app-error";
-// import { asyncHandler } from "./middlewares/asyncHandler.middlerware";
 // import connctDatabase from "./config/database.config";
-// import authRoutes from "./routes/auth.route";
 // import { passportAuthenticateJwt } from "./config/passport.config";
 // import userRoutes from "./routes/user.route";
 // import transactionRoutes from "./routes/transaction.route";
@@ -34,24 +35,24 @@ app.use(
   })
 );
 
-app.get("/",(req:Request,res:Response,next:NextFunction)=>{
-    res.status(HTTPSTATUS.OK).json({
-        message:"HELLO FROM VIKAS THE DEVELOPER OF THIS APPLICATION"
-    })
-
-})
-
-// app.get(
-//   "/",
-//   asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-//     throw new BadRequestException("This is a test error");
+// app.get("/",(req:Request,res:Response,next:NextFunction)=>{
 //     res.status(HTTPSTATUS.OK).json({
-//       message: "Hello Subcribe to the channel",
-//     });
-//   })
-// );
+//         message:"HELLO FROM VIKAS THE DEVELOPER OF THIS APPLICATION"
+//     })
 
-// // app.use(`${BASE_PATH}/auth`, authRoutes);
+// })
+
+app.get(
+  "/",
+  asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    throw new BadRequestException("This is a test error");
+    res.status(HTTPSTATUS.OK).json({
+      message: "HELLO FROM THE DEVELOPER SIDE",
+    });
+  })
+);
+
+app.use(`${BASE_PATH}/auth`, authRoutes);
 // // app.use(`${BASE_PATH}/user`, passportAuthenticateJwt, userRoutes);
 // // app.use(`${BASE_PATH}/transaction`, passportAuthenticateJwt, transactionRoutes);
 // // app.use(`${BASE_PATH}/report`, passportAuthenticateJwt, reportRoutes);
@@ -59,16 +60,13 @@ app.get("/",(req:Request,res:Response,next:NextFunction)=>{
 
 app.use(errorHandler);
 
-// app.listen(Env.PORT, async () => {
-//   await connctDatabase();
+app.listen(Env.PORT, async () => {
+  await connctDatabase();
 
-//   if (Env.NODE_ENV === "development") {
-//     await initializeCrons();
-//   }
+  // if (Env.NODE_ENV === "development") {
+  //   await initializeCrons();
+  // }
 
-//   console.log(`Server is running on port ${Env.PORT} in ${Env.NODE_ENV} mode`);
-// });
+  console.log(`Server is running on port ${Env.PORT} in ${Env.NODE_ENV} mode`);
+});
 
-app.listen(Env.PORT,()=>{
-    console.log(`SERVER IS RUNNIN ON PORT ${Env.PORT}`)
-})

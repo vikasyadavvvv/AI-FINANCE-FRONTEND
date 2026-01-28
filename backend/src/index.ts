@@ -1,5 +1,4 @@
 import "dotenv/config";
-// import "./config/passport.config";
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import passport from "passport";
@@ -14,6 +13,7 @@ import "./config/passport.config"
 import { passportAuthenticateJwt } from "./config/passport.config";
 import userRoutes from "./routes/user.route";
 import transactionRoutes from "./routes/transaction.route";
+import { initializeCrons } from "./crons";
 
 const app = express();
 const BASE_PATH = Env.BASE_PATH;
@@ -59,9 +59,9 @@ app.use(errorHandler);
 app.listen(Env.PORT, async () => {
   await connctDatabase();
 
-  // if (Env.NODE_ENV === "development") {
-  //   await initializeCrons();
-  // }
+  if (Env.NODE_ENV === "development") {
+    await initializeCrons();
+  }
 
   console.log(`Server is running on port ${Env.PORT} in ${Env.NODE_ENV} mode`);
 });

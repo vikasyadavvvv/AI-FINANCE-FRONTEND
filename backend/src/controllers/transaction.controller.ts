@@ -15,7 +15,7 @@ import {
   duplicateTransactionService,
   getAllTransactionService,
   getTransactionByIdService,
-//   scanReceiptService,
+  scanReceiptService,
   updateTransactionService,
 } from "../services/transaction.service";
 import { TransactionTypeEnum } from "../models/transaction.model";
@@ -148,15 +148,37 @@ export const bulkTransactionController = asyncHandler(
   }
 );
 
-// export const scanReceiptController = asyncHandler(
-//   async (req: Request, res: Response) => {
-//     const file = req?.file;
+export const scanReceiptController = asyncHandler(
+  async (req: Request, res: Response) => {
+    console.log("scanReceiptController hit");
 
-//     const result = await scanReceiptService(file);
+    console.time("TOTAL_REQUEST_TIME");
 
-//     return res.status(HTTPSTATUS.OK).json({
-//       message: "Reciept scanned successfully",
-//       data: result,
-//     });
-//   }
-// );
+    console.time("FILE_RECEIVE_TIME");
+    const file = req?.file;
+    console.timeEnd("FILE_RECEIVE_TIME");
+
+    if (!file) {
+      console.log("No file received");
+    } else {
+      console.log("✅ File received");
+      console.log({
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size_kb: Math.round(file.size / 1024),
+      });
+    }
+
+    console.time("SCAN_SERVICE_TIME");
+    const result = await scanReceiptService(file);
+    console.timeEnd("SCAN_SERVICE_TIME");
+
+    console.timeEnd("TOTAL_REQUEST_TIME");
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: "Reciept scanned successfully",
+      data: result,
+    });
+  }
+);

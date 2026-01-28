@@ -8,9 +8,9 @@ import {
   CreateTransactionType,
   UpdateTransactionType,
 } from "../validators/transaction.validator";
-// import { genAI, genAIModel } from "../config/google-ai.config";
+import { genAI, genAIModel } from "../config/google-ai.config";
 import { createPartFromBase64, createUserContent } from "@google/genai";
-// import { receiptPrompt } from "../utils/prompt";
+import { receiptPrompt } from "../utils/prompt";
 
 export const createTransactionService = async (
   body: CreateTransactionType,
@@ -261,63 +261,115 @@ export const bulkTransactionService = async (
   }
 };
 
-// export const scanReceiptService = async (
-//   file: Express.Multer.File | undefined
-// ) => {
-//   if (!file) throw new BadRequestException("No file uploaded");
 
-//   try {
-//     if (!file.path) throw new BadRequestException("failed to upload file");
 
-//     console.log(file.path);
+export const scanReceiptService = async (
+  file: Express.Multer.File | undefined
+) => {
+  console.log("scanReceiptService started");
 
-//     const responseData = await axios.get(file.path, {
-//       responseType: "arraybuffer",
-//     });
-//     const base64String = Buffer.from(responseData.data).toString("base64");
+  if (!file) {
+    console.error("No file received in service");
+    throw new BadRequestException("No file uploaded");
+  }
 
-//     if (!base64String) throw new BadRequestException("Could not process file");
+  try {
+    if (!file.path) {
+      console.error("File path missing after upload", file);
+      throw new BadRequestException("Failed to upload file");
+    }
 
-//     const result = await genAI.models.generateContent({
-//       model: genAIModel,
-//       contents: [
-//         createUserContent([
-//           receiptPrompt,
-//           createPartFromBase64(base64String, file.mimetype),
-//         ]),
-//       ],
-//       config: {
-//         temperature: 0,
-//         topP: 1,
-//         responseMimeType: "application/json",
-//       },
-//     });
+    console.log("Receipt URL:", file.path);
 
-//     const response = result.text;
-//     const cleanedText = response?.replace(/```(?:json)?\n?/g, "").trim();
+    console.log("⬇Downloading image from Cloudinary...");
+    const responseData = await axios.get(file.path, {
+      responseType: "arraybuffer",
+      timeout: 10_000,
+    });
 
-//     if (!cleanedText)
-//       return {
-//         error: "Could not read reciept  content",
-//       };
+    console.log(
+      "Image downloaded. Size (bytes):",
+      responseData.data?.byteLength
+    );
 
-//     const data = JSON.parse(cleanedText);
+    const base64String = Buffer.from(responseData.data).toString("base64");
 
-//     if (!data.amount || !data.date) {
-//       return { error: "Reciept missing required information" };
-//     }
+    if (!base64String) {
+      console.error("Base64 conversion failed");
+      throw new BadRequestException("Could not process file");
+    }
 
-//     return {
-//       title: data.title || "Receipt",
-//       amount: data.amount,
-//       date: data.date,
-//       description: data.description,
-//       category: data.category,
-//       paymentMethod: data.paymentMethod,
-//       type: data.type,
-//       receiptUrl: file.path,
-//     };
-//   } catch (error) {
-//     return { error: "Reciept scanning  service unavailable" };
-//   }
-// };
+    console.log(
+      "🧬 Base64 generated. Length:",
+      base64String.length
+    );
+
+    console.log("Calling GenAI model...");
+    const result = await genAI.models.generateContent({
+      model: genAIModel,
+      contents: [
+        createUserContent([
+          receiptPrompt,
+          createPartFromBase64(base64String, file.mimetype),
+        ]),
+      ],
+      config: {
+        temperature: 0,
+        topP: 1,
+        responseMimeType: "application/json",
+      },
+    });
+
+    console.log("GenAI responded");
+
+    const response = result?.text;
+    console.log("Raw AI response:", response);
+
+    const cleanedText = response
+      ?.replace(/```(?:json)?\n?/g, "")
+      .trim();
+
+    console.log("🧹 Cleaned AI response:", cleanedText);
+
+    if (!cleanedText) {
+      console.error("Empty AI response");
+      return { error: "Could not read receipt content" };
+    }
+
+    let data;
+    try {
+      data = JSON.parse(cleanedText);
+    } catch (jsonError) {
+      console.error("JSON parse failed", cleanedText);
+      return { error: "AI returned invalid JSON" };
+    }
+
+    console.log("Parsed receipt data:", data);
+
+    if (!data.amount || !data.date) {
+      console.error("Missing required receipt fields", data);
+      return { error: "Receipt missing required information" };
+    }
+
+    console.log("Receipt scan successful");
+
+    return {
+      title: data.title || "Receipt",
+      amount: data.amount,
+      date: data.date,
+      description: data.description,
+      category: data.category,
+      paymentMethod: data.paymentMethod,
+      type: data.type,
+      receiptUrl: file.path,
+    };
+  } catch (error: any) {
+    console.error("RECEIPT SCAN FAILED", {
+      message: error?.message,
+      stack: error?.stack,
+      response: error?.response?.data,
+    });
+
+    return { error: "Receipt scanning service unavailable" };
+  }
+};

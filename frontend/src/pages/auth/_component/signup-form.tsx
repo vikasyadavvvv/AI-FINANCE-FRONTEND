@@ -157,12 +157,12 @@ const SignUpForm = ({
           </Button>
 
           {/* Divider */}
-          <div className="relative text-center text-sm">
+          {/* <div className="relative text-center text-sm">
             <span className="relative bg-background px-2 text-muted-foreground">
               Or continue with
             </span>
             <div className="absolute inset-x-0 top-1/2 h-px bg-border" />
-          </div>
+          </div> */}
 
           {/* <Button variant="outline" type="button" className="w-full gap-2">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">

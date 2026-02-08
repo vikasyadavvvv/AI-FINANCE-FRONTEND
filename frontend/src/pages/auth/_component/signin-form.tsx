@@ -151,12 +151,12 @@ const SignInForm = ({
           </Button>
 
           {/* Divider */}
-          <div className="relative text-center text-sm">
+          {/* <div className="relative text-center text-sm">
             <span className="relative bg-background px-2 text-muted-foreground">
               Or continue with
             </span>
             <div className="absolute inset-x-0 top-1/2 h-px bg-border" />
-          </div>
+          </div> */}
 
           {/* GitHub */}
           {/* <Button variant="outline" type="button" className="w-full gap-2">

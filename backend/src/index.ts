@@ -23,7 +23,6 @@ const BASE_PATH = Env.BASE_PATH;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(passport.initialize());
 
 app.use(
   cors({
@@ -32,12 +31,7 @@ app.use(
   })
 );
 
-// app.get("/",(req:Request,res:Response,next:NextFunction)=>{
-//     res.status(HTTPSTATUS.OK).json({
-//         message:"HELLO FROM VIKAS THE DEVELOPER OF THIS APPLICATION"
-//     })
 
-// })
 
 app.get(
   "/",

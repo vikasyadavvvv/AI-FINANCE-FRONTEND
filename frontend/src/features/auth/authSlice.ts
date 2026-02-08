@@ -16,7 +16,7 @@ interface User {
 
 interface ReportSetting {
   userId: string;
-  frequency?: string;
+  frequency?: "DAILY" | "WEEKLY" | "MONTHLY";
   isEnabled: boolean;
 }
 

@@ -28,7 +28,7 @@ import { useEffect } from "react";
 
 const formSchema = z.object({
   email: z.string(),
-  frequency: z.string(),
+  frequency: z.enum(["DAILY", "WEEKLY", "MONTHLY"]),
   isEnabled: z.boolean(),
 });
 
@@ -59,14 +59,17 @@ const ScheduleReportForm = ({
       form.reset({
         email: user?.email,
         isEnabled: reportSetting?.isEnabled,
-        frequency: reportSetting?.frequency,
+        frequency: reportSetting?.frequency ?? "MONTHLY",
       });
     }
   }, [user, form, reportSetting]);
 
   // Handle form submission
   const onSubmit = (values: FormValues) => {
-    const payload = { isEnabled: values.isEnabled };
+    const payload = {
+      isEnabled: values.isEnabled,
+      frequency: values.frequency,
+    };
     updateReportSetting(payload)
       .unwrap()
       .then(() => {
@@ -84,7 +87,16 @@ const ScheduleReportForm = ({
     if (!form.watch("isEnabled")) {
       return "Reports are currently deactivated";
     }
-    return "Report will be sent once a month on the 1st day of the next month";
+    const frequency = form.watch("frequency");
+    switch (frequency) {
+      case "DAILY":
+        return "Report will be generated every day based on the previous day's activity";
+      case "WEEKLY":
+        return "Report will be generated weekly based on the previous week's activity";
+      case "MONTHLY":
+      default:
+        return "Report will be generated monthly based on the previous month's activity";
+    }
   };
 
   return (
@@ -102,7 +114,7 @@ const ScheduleReportForm = ({
                 rounded-lg border p-4"
                 >
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Monthly Reports</FormLabel>
+                    <FormLabel className="text-base">Scheduled Reports</FormLabel>
                     <p className="text-sm text-muted-foreground">
                       {form.watch("isEnabled")
                         ? "Reports activated"
@@ -152,8 +164,8 @@ const ScheduleReportForm = ({
                     <FormLabel>Repeat On</FormLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      disabled={true}
+                      value={field.value}
+                      disabled={!form.watch("isEnabled")}
                     >
                       <FormControl className="w-full">
                         <SelectTrigger>
@@ -161,6 +173,8 @@ const ScheduleReportForm = ({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="DAILY">Daily</SelectItem>
+                        <SelectItem value="WEEKLY">Weekly</SelectItem>
                         <SelectItem value="MONTHLY">Monthly</SelectItem>
                       </SelectContent>
                     </Select>

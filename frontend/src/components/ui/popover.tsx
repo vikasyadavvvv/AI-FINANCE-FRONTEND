@@ -25,14 +25,14 @@ function Popover({
 function PopoverTrigger({
   ...props
 }: React.ComponentProps<typeof PopoverPrimitive.Trigger>) {
-  const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
+  const handlePointerDown: React.ComponentProps<typeof PopoverPrimitive.Trigger>["onPointerDown"] = (event) => {
     if (import.meta.env.DEV) {
       console.log("[popover] trigger pointerdown", event.target)
     }
     props.onPointerDown?.(event)
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick: React.ComponentProps<typeof PopoverPrimitive.Trigger>["onClick"] = (event) => {
     if (import.meta.env.DEV) {
       console.log("[popover] trigger click", event.target)
     }

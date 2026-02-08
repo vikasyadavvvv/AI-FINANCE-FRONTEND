@@ -34,14 +34,14 @@ function DropdownMenuPortal({
 function DropdownMenuTrigger({
   ...props
 }: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
-  const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
+  const handlePointerDown: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>["onPointerDown"] = (event) => {
     if (import.meta.env.DEV) {
       console.log("[dropdown-menu] trigger pointerdown", event.target)
     }
     props.onPointerDown?.(event)
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>["onClick"] = (event) => {
     if (import.meta.env.DEV) {
       console.log("[dropdown-menu] trigger click", event.target)
     }

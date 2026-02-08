@@ -47,7 +47,7 @@ const AuthSidePanel = () => {
             Meet FinyliticsX, your AI finance co-pilot
           </h1>
           <p className="mt-3 text-sm text-muted-foreground">
-            Smart insights, automated categorization, and clean monthly reports
+            Smart insights, automated categorization, and clean scheduled reports
             in a single workspace built for clarity.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
@@ -85,8 +85,8 @@ const AuthSidePanel = () => {
           />
           <StatCard
             icon={CalendarCheck}
-            title="Monthly reports"
-            description="Auto summaries delivered on time."
+            title="Scheduled reports"
+            description="Daily, weekly, or monthly summaries."
           />
         </div>
 

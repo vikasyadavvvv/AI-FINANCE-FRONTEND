@@ -32,7 +32,7 @@ const ScheduleReportDrawer = () => {
               Report Settings
             </DrawerTitle>
             <DrawerDescription className="-mt-1">
-              Enable or disable monthly financial report emails
+              Enable or disable financial report emails and set frequency
             </DrawerDescription>
           </div>
           <DrawerClose className="absolute top-4 right-4">

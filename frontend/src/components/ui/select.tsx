@@ -45,14 +45,14 @@ function SelectTrigger({
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default"
 }) {
-  const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
+  const handlePointerDown: React.ComponentProps<typeof SelectPrimitive.Trigger>["onPointerDown"] = (event) => {
     if (import.meta.env.DEV) {
       console.log("[select] trigger pointerdown", event.target)
     }
     props.onPointerDown?.(event)
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick: React.ComponentProps<typeof SelectPrimitive.Trigger>["onClick"] = (event) => {
     if (import.meta.env.DEV) {
       console.log("[select] trigger click", event.target)
     }

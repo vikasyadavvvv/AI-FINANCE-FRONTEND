@@ -24,9 +24,31 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+const allowedOrigins = Env.FRONTEND_ORIGIN
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: Env.FRONTEND_ORIGIN,
+    origin: (origin, callback) => {
+      // Allow non-browser requests (like curl, server-to-server) with no Origin header.
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error(
+          `CORS blocked: ${origin} not in allowed origins: ${allowedOrigins.join(
+            ", "
+          )}`
+        )
+      );
+    },
     credentials: true,
   })
 );

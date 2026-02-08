@@ -62,3 +62,9 @@ app.listen(Env.PORT, async () => {
   console.log(`Server is running on port ${Env.PORT} in ${Env.NODE_ENV} mode`);
 });
 
+
+app.get("/health", (req: Request, res: Response) => {
+  res.status(HTTPSTATUS.OK).json({
+    status: "ok",
+  });
+});
